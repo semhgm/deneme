@@ -2,11 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Task;
+use App\Services\TaskService;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
+    protected $taskService;
+
+    public function __construct(TaskService $taskService)
+    {
+        $this->taskService = $taskService;
+    }
     /**
      * Display a listing of the resource.
      */
@@ -53,12 +61,15 @@ class TaskController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Task $task)
+    public function update(UpdateTaskRequest $request, Task $task)
     {
-    $task->completed=true;
-    $task->save();
-    return response()->json($task);
+        // Validasyon ve Yetkilendirme -> UpdateTaskRequest halletti.
+        // İş Mantığı ve Veri Erişimi -> TaskService halletti.
 
+        $updatedTask = $this->taskService->completeTask($task->id);
+
+        // Controller'ın tek görevi: İsteği al, ilgili servise yönlendir, cevabı döndür.
+        return response()->json($updatedTask);
     }
 
     /**
